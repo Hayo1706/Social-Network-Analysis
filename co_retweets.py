@@ -1,6 +1,5 @@
 import pandas as pd
-from igraph import Graph
-import igraph as ig
+
 from collections import defaultdict
 from itertools import combinations
 
