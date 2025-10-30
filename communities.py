@@ -5,7 +5,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-
+import matplotlib.colors as mcolors
 # Communities.py
 # Read nodes CSV, count communities, and visualize network with differently coloured communities using networkx
 
@@ -114,19 +114,25 @@ def main():
 
     # layout
     if G.number_of_edges() > 0:
-        pos = nx.spring_layout(G, seed=42)
+        pos = nx.forceatlas2_layout(G, max_iter=800, scaling_ratio=1, seed=42)
     else:
         pos = nx.circular_layout(G)
 
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(14, 10))
     # draw edges lightly
     if G.number_of_edges() > 0:
         nx.draw_networkx_edges(G, pos, alpha=0.3, width=0.6)
 
     # draw nodes (size scaled by degree if edges exist)
     if G.number_of_edges() > 0:
-        degrees = np.array([max(10, d * 20) for _, d in G.degree()])
-        nx.draw_networkx_nodes(G, pos, node_size=degrees, node_color=node_colors)
+        degrees = np.array([d for _, d in G.degree()])
+        dmin, dmax = degrees.min(), degrees.max()
+        max_size = 300
+        min_size = 20
+        node_sizes = min_size + (degrees - dmin) * (max_size - min_size) / (dmax - dmin)
+
+        nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color=node_colors, edgecolors="black", linewidths=0.3)
+        nx.draw_networkx_edges(G, pos, alpha=0.01, width=0.01, edge_color='red')
     else:
         nx.draw_networkx_nodes(G, pos, node_size=80, node_color=node_colors)
 
